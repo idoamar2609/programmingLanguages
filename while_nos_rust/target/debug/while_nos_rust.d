@@ -1,0 +1,1 @@
+/home/gavzeev/programmingLanguages/while_nos_rust/target/debug/while_nos_rust: /home/gavzeev/programmingLanguages/while_nos_rust/src/ast.rs /home/gavzeev/programmingLanguages/while_nos_rust/src/main.rs /home/gavzeev/programmingLanguages/while_nos_rust/src/nos.rs /home/gavzeev/programmingLanguages/while_nos_rust/src/semantics.rs
