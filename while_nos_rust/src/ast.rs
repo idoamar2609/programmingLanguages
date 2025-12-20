@@ -10,6 +10,8 @@ pub enum AExp {
     Mult(Box<AExp>, Box<AExp>),
     Sub(Box<AExp>, Box<AExp>),
     Iand(Box<AExp>, Box<AExp>),
+    Shl(Box<AExp>, Box<AExp>),
+    Shr(Box<AExp>, Box<AExp>),
 }
 
 // Boolean Expressions (BExp)
@@ -32,6 +34,7 @@ pub enum Stm {
     Comp(Box<Stm>, Box<Stm>),
     If(BExp, Box<Stm>, Box<Stm>),
     While(BExp, Box<Stm>),
+    DoWhile(Box<Stm>, BExp),
 }
 
 
@@ -105,6 +108,104 @@ pub fn test4() -> Stm {
                     ),
                 )),
             )),
+        )),
+    )
+}
+
+// test5: a := 84 ; b := 22 ; c := 0 ; while b != 0 do ( a := a << 1 ; b := b >> 1 )
+pub fn test5() -> Stm {
+    Stm::Comp(
+        Box::new(Stm::Ass("a".to_string(), AExp::Num(84))),
+        Box::new(Stm::Comp(
+            Box::new(Stm::Ass("b".to_string(), AExp::Num(22))),
+            Box::new(Stm::Comp(
+                Box::new(Stm::Ass("c".to_string(), AExp::Num(0))),
+                Box::new(Stm::While(
+                    BExp::Neg(Box::new(BExp::Aeq(
+                        AExp::Var("b".to_string()),
+                        AExp::Num(0),
+                    ))),
+                    Box::new(Stm::Comp(
+                        Box::new(Stm::Ass(
+                            "a".to_string(),
+                            AExp::Shl(
+                                Box::new(AExp::Var("a".to_string())),
+                                Box::new(AExp::Num(1)),
+                            ),
+                        )),
+                        Box::new(Stm::Ass(
+                            "b".to_string(),
+                            AExp::Shr(
+                                Box::new(AExp::Var("b".to_string())),
+                                Box::new(AExp::Num(1)),
+                            ),
+                        )),
+                    )),
+                )),
+            )),
+        )),
+    )
+}
+
+// test6: Do S While b
+// x := 1; do x := x << 1 while x < 4
+pub fn test6() -> Stm {
+    Stm::Comp(
+        Box::new(Stm::Ass("x".to_string(), AExp::Num(1))),
+        Box::new(Stm::DoWhile(
+            Box::new(Stm::Ass(
+                "x".to_string(),
+                AExp::Shl(
+                    Box::new(AExp::Var("x".to_string())),
+                    Box::new(AExp::Num(1)),
+                ),
+            )),
+            BExp::Neg(Box::new(BExp::Gte(
+                AExp::Var("x".to_string()),
+                AExp::Num(4),
+            ))),
+        )),
+    )
+}
+
+// test7: Do S While b
+// x := 10; do x := x >> 1 while x > 2
+pub fn test7() -> Stm {
+    Stm::Comp(
+        Box::new(Stm::Ass("x".to_string(), AExp::Num(10))),
+        Box::new(Stm::DoWhile(
+            Box::new(Stm::Ass(
+                "x".to_string(),
+                AExp::Shr(
+                    Box::new(AExp::Var("x".to_string())),
+                    Box::new(AExp::Num(1)),
+                ),
+            )),
+            BExp::Gte(
+                AExp::Var("x".to_string()),
+                AExp::Num(3), // x > 2 is equivalent to x >= 3 for integers
+            ),
+        )),
+    )
+}
+
+// test8: Do S While b
+// x := 1; do x := x + 1 while x < 1
+pub fn test8() -> Stm {
+    Stm::Comp(
+        Box::new(Stm::Ass("x".to_string(), AExp::Num(1))),
+        Box::new(Stm::DoWhile(
+            Box::new(Stm::Ass(
+                "x".to_string(),
+                AExp::Add(
+                    Box::new(AExp::Var("x".to_string())),
+                    Box::new(AExp::Num(1)),
+                ),
+            )),
+            BExp::Neg(Box::new(BExp::Gte(
+                AExp::Var("x".to_string()),
+                AExp::Num(1),
+            ))),
         )),
     )
 }
